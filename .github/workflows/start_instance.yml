@@ -1,0 +1,21 @@
+name: Start EC2 Instance
+
+on:
+  workflow_dispatch:  # Trigger the workflow manually
+
+jobs:
+  start_instance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: your-aws-region  # Replace with your AWS region
+
+      - name: Start EC2 instance
+        run: |
+          # Replace 'YOUR_INSTANCE_ID' with the ID of the EC2 instance you want to start
+          aws ec2 start-instances --instance-ids YOUR_INSTANCE_ID
