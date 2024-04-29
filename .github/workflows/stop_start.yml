@@ -1,0 +1,33 @@
+name: Manage EC2 Instance
+
+on:
+  workflow_dispatch:  # Trigger the workflow manually
+
+jobs:
+  manage_instance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: your-aws-region  # Replace with your AWS region
+
+      - name: Check if server is running
+        id: check_server
+        run: |
+          # Use AWS CLI to describe the instance status
+          INSTANCE_STATUS=$(aws ec2 describe-instances --instance-ids i-0a227ecaa6b13a780 --query 'Reservations[0].Instances[0].State.Name' --output text)
+          if [ "$INSTANCE_STATUS" = "running" ]; then
+            echo "::set-output name=is_running::true"
+          else
+            echo "::set-output name=is_running::false"
+          fi
+
+      - name: Stop EC2 instance if it's running
+        if: steps.check_server.outputs.is_running == 'true'
+        run: |
+          # Stop the EC2 instance if it's running
+          aws ec2 stop-instances --instance-ids i-0a227ecaa6b13a780
