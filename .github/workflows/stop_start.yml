@@ -25,9 +25,14 @@ jobs:
           else
             echo "::set-output name=is_running::false"
           fi
-
       - name: Stop EC2 instance if it's running
         if: steps.check_server.outputs.is_running == 'true'
         run: |
+           # Stop the EC2 instance if it's running
+           aws ec2 stop-instances --instance-ids i-0a227ecaa6b13a780
+                
+      - name: Stop EC2 instance if it's running
+        if: steps.check_server.outputs.is_running == 'false'
+        run: |
           # Stop the EC2 instance if it's running
-          aws ec2 stop-instances --instance-ids i-0a227ecaa6b13a780
+          aws ec2 start-instances --instance-ids i-0a227ecaa6b13a780
