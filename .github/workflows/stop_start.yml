@@ -13,7 +13,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: REGION  # Replace with your AWS region
+          aws-region: ${{ vars.REGION }}  # Replace with your AWS region
 
       - name: Check if server is running
         id: check_server
@@ -29,10 +29,10 @@ jobs:
         if: steps.check_server.outputs.is_running == 'true'
         run: |
            # Stop the EC2 instance if it's running
-           aws ec2 stop-instances --instance-ids MY_INSTANCE
+           aws ec2 stop-instances --instance-ids ${{ vars.MY_INSTANCE }}
                 
       - name: Stop EC2 instance if it's running
         if: steps.check_server.outputs.is_running == 'false'
         run: |
           # Stop the EC2 instance if it's running
-          aws ec2 start-instances --instance-ids MY_INSTANCE
+          aws ec2 start-instances --instance-ids ${{ vars.MY_INSTANCE }}
