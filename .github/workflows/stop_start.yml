@@ -14,7 +14,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1  # Replace with your AWS region
-
+          
+      - name: Stop EC2 instance if it's running
+              if: steps.check_server.outputs.is_running == 'true'
+              run: |
+                # Stop the EC2 instance if it's running
+                aws ec2 stop-instances --instance-ids i-0a227ecaa6b13a780
+                
       - name: Check if server is running
         id: check_server
         run: |
@@ -26,8 +32,4 @@ jobs:
             echo "::set-output name=is_running::false"
           fi
 
-      - name: Stop EC2 instance if it's running
-        if: steps.check_server.outputs.is_running == 'true'
-        run: |
-          # Stop the EC2 instance if it's running
-          aws ec2 stop-instances --instance-ids i-0a227ecaa6b13a780
+      
